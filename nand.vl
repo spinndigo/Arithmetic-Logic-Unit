@@ -1,0 +1,16 @@
+module my_nand;
+  wire out;
+  reg a;
+  reg b;
+  
+  assign out = ~(a & b);
+  initial
+    begin
+      $monitor($time,,"a=%b,b=%b,out=%b",a,b,out);
+         #10 a=0; b=0;
+         #10 a=0; b=1;
+         #10 a=1; b=0;
+         #10 a=1; b=1;
+         #10 $finish;
+ end   
+endmodule

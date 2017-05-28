@@ -1,0 +1,60 @@
+// this is an 8-bit 8:1 mux module for the ALU
+// Joseph Spinosa
+// remember the LSB is for tier 1
+
+module bigmux;
+
+reg[7:0] a,b,c,d,e,f,g,h;
+reg[2:0] select; // because it's 8:1
+wire[7:0] T11,T12,T13,T14,T21,T22; //read tier one 1st position, tier 1 2nd position, etc. (preliminary outputs)
+wire[7:0] out; //last output 
+
+eightbitmux E6 (a, b, select[0], T11); 
+eightbitmux E5 (c, d, select[0], T12);
+eightbitmux E4 (e, f, select[0], T13);
+eightbitmux E3 (g, h, select[0], T14);
+eightbitmux E2 (T11, T12, select[1], T21);
+eightbitmux E1 (T13, T14, select[1], T22);
+eightbitmux E0 (T21, T22, select[2], out); // this is the tier 3 AKA last 2:1
+
+initial
+   begin
+     $monitor($time,,"a=%b, b=%b, c=%b, d=%b, e=%b, f=%b, g=%b, h=%b, select=%b, out=%b", a,b,c,d,e,f,g,h,select,out);
+
+  #10 a=8'b01111111; b=8'b00000000; c=8'b10100101; d=8'b10110101; e=8'b00110101; f=8'b10110101; g=8'b10100101; h=8'b00100101; select=3'b010; 
+  #10 a=8'b01111111; b=8'b00000000; c=8'b10010111; d=8'b00100101; e=8'b10111101; f=8'b10100101; g=8'b10100101; h=8'b10000101; select=3'b111;
+  #10 a=8'b00001110; b=8'b00000011; c=8'b10011101; d=8'b10100001; e=8'b10100111; f=8'b00010101; g=8'b00100000; h=8'b10101101; select=3'b010;
+  #10 a=8'b01111111; b=8'b00000001; c=8'b10001111; d=8'b10101101; e=8'b00100100; f=8'b10000101; g=8'b10110101; h=8'b11100101; select=3'b011;
+  #10 a=8'b00000010; b=8'b00000101; c=8'b10011111; d=8'b10110101; e=8'b00110101; f=8'b00100101; g=8'b10110101; h=8'b11100101; select=3'b110;
+  #10 a=8'b11111110; b=8'b00000101; c=8'b10011110; d=8'b10111101; e=8'b10111101; f=8'b10111111; g=8'b11100101; h=8'b10000101; select=3'b011;
+  #10 $finish;
+   end
+endmodule
+
+
+module eightbitmux(a,b,select,out);
+
+input [7:0]  a,b;
+input select;
+output[7:0] out;
+
+simplemux M7 (a[7], b[7], select, out[7]);
+simplemux M6 (a[6], b[6], select, out[6]);
+simplemux M5 (a[5], b[5], select, out[5]);
+simplemux M4 (a[4], b[4], select, out[4]);
+simplemux M3 (a[3], b[3], select, out[3]);
+simplemux M2 (a[2], b[2], select, out[2]);
+simplemux M1 (a[1], b[1], select, out[1]);
+simplemux M0 (a[0], b[0], select, out[0]);
+
+endmodule
+
+module simplemux(a,b,select,out);
+
+input a,b, select;
+output out;
+
+assign out = (a & !select) | (b & select);
+
+endmodule
+

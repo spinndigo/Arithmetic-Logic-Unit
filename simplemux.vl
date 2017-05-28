@@ -1,0 +1,23 @@
+module simplemux;
+
+reg a,b, select;
+wire out;
+
+assign out = (a & !select) | (b & select);
+
+initial
+   begin
+     $monitor($time,,"a=%b, b=%b, select=%b, out=%b", a,b,select,out);
+
+  #10 a=0; b=0; select=0;
+  #10 a=0; b=0; select=1;
+  #10 a=0; b=1; select=0;
+  #10 a=0; b=1; select=1;
+  #10 a=1; b=0; select=0;
+  #10 a=1; b=0; select=1;
+  #10 a=1; b=1; select=0;
+  #10 a=1; b=1; select=1;
+  #10 $finish;
+
+end
+endmodule     

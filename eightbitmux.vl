@@ -1,0 +1,52 @@
+// this is an eight bit 8:1 mux module for the ALU
+// Joseph Spinosa
+
+
+
+
+module eightbitmux;
+
+reg[7:0] a,b;
+reg select;
+wire[7:0] out;
+
+simplemux M7 (a[7], b[7], select, out[7]);
+simplemux M6 (a[6], b[6], select, out[6]);
+simplemux M5 (a[5], b[5], select, out[5]);
+simplemux M4 (a[4], b[4], select, out[4]);
+simplemux M3 (a[3], b[3], select, out[3]);
+simplemux M2 (a[2], b[2], select, out[2]);
+simplemux M1 (a[1], b[1], select, out[1]);
+simplemux M0 (a[0], b[0], select, out[0]);
+
+initial
+   begin
+     $monitor($time,,"a=%b, b=%b, select=%b, out=%b",a,b,select, out);
+
+  #10 a=8'b01111111; b=8'b00000000; select=0;
+  #10 a=8'b01111111; b=8'b00000000; select=0;
+  #10 a=8'b00001110; b=8'b00000011; select=0;
+  #10 a=8'b01111111; b=8'b00000001; select=0;
+  #10 a=8'b00000010; b=8'b00000101; select=0;
+  #10 a=8'b11111110; b=8'b00000101; select=0;
+  #10 $finish;
+   end
+endmodule
+
+
+
+
+
+
+
+
+module simplemux(a,b,select,out);
+
+input a,b,select;
+output out;
+
+
+assign out = (a & !select) | (b & select);
+
+endmodule
+
